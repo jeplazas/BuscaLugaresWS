@@ -7,6 +7,8 @@ package ads.blWS.logica;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -37,7 +39,7 @@ public class BuscaLugares {
     }
 
     // PlaceSearch
-    public static String buscarLugares(String busqueda, String ciudad, String tipo) {
+    public static List<Lugar> buscarLugares(String busqueda, String ciudad, String tipo) {
         HttpClient client = new DefaultHttpClient();
         String responseBody = null;
 
@@ -61,7 +63,7 @@ public class BuscaLugares {
     }
 
     // PlaceDetails
-    public static String verDetalles(String referencia) {
+    public static Lugar verDetalles(String referencia) {
         HttpClient client = new DefaultHttpClient();
         String responseBody = null;
 
@@ -78,10 +80,11 @@ public class BuscaLugares {
         return procesarverDetallesXML(responseBody);
     }
 
-    public static String procesarbuscarLugaresXML(String xml) {
+    public static List<Lugar> procesarbuscarLugaresXML(String xml) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db;
-        String resultados = "";
+        List<Lugar> resultados = new ArrayList<>();
+        //String resultados = "";
 
         try {
             db = dbf.newDocumentBuilder();
@@ -136,6 +139,10 @@ public class BuscaLugares {
                     ident = e6.getTextContent();
                 }
 
+                Lugar resultado = new Lugar(nombre, direccion, clas, icono, referencia, ident);
+                resultados.add(resultado);
+                
+                /*
                 String resultado = "Name: " + nombre + "\n"
                         + "address: " + direccion + "\n"
                         + "rating: " + clas + "\n"
@@ -143,6 +150,7 @@ public class BuscaLugares {
                         + "reference: " + referencia + "\n"
                         + "id: " + ident + "\n";
                 resultados = resultados + resultado + "\n";
+                */
             }
 
         } catch (SAXException ex) {
@@ -156,10 +164,11 @@ public class BuscaLugares {
         return resultados;
     }
 
-    public static String procesarverDetallesXML(String xml) {
+    public static Lugar procesarverDetallesXML(String xml) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db;
-        String resultados = "";
+        Lugar resultado = new Lugar();
+        //String resultado = "";
 
         try {
             db = dbf.newDocumentBuilder();
@@ -247,8 +256,12 @@ public class BuscaLugares {
                 Element e11 = (Element) website.item(0);
                 web = e11.getTextContent();
             }
+            
+            Lugar resu = new Lugar(nombre, direccion, clas, icono, referencia, ident, veci, phone, international_phone, purl, web);
+            resultado = resu;
 
-            resultados = "Name: " + nombre + "\n"
+            /*
+            resultado = "Name: " + nombre + "\n"
                     + "address: " + direccion + "\n"
                     + "rating: " + clas + "\n"
                     + "icon: " + icono + "\n"
@@ -259,6 +272,7 @@ public class BuscaLugares {
                     + "url: " + purl + "\n"
                     + "international_phone_number: " + international_phone + "\n"
                     + "website: " + web + "\n";
+            */
 
         } catch (SAXException ex) {
             Logger.getLogger(BuscaLugares.class.getName()).log(Level.SEVERE, null, ex);
@@ -268,7 +282,7 @@ public class BuscaLugares {
             Logger.getLogger(BuscaLugares.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return resultados;
+        return resultado;
     }
 
     public static String toGetReady(String text) {
